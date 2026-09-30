@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Радион Clicker</title>
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-grad: linear-gradient(135deg, #09090b 0%, #150525 50%, #2b0b42 100%);
+            --accent: #a855f7;
+            --accent-glow: rgba(168, 85, 247, 0.5);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(168, 85, 247, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-grad); color: var(--text-main);
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; flex-direction: column;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #loadingScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #09090b; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .loading-avatar {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 3px solid var(--accent); box-shadow: 0 0 30px var(--accent-glow);
+            margin-bottom: 25px; animation: pulse 1.5s infinite ease-in-out alternate;
+        }
+        .loading-text { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: 2px; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 20px var(--accent-glow); } 100% { transform: scale(1.05); box-shadow: 0 0 50px var(--accent-glow); } }
+
+        .header { padding: 30px 20px 10px; text-align: center; }
+        .score-badge { font-size: 46px; font-weight: 800; text-shadow: 0 0 20px var(--accent-glow); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .score-badge span { color: #fff; }
+        .progress-wrapper {
+            margin: 15px auto 0; width: 85%; background: rgba(0,0,0,0.4);
+            border-radius: 12px; height: 10px; overflow: hidden; border: 1px solid var(--glass-border);
+        }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #d946ef); width: 0%; transition: width 0.3s ease; }
+        .level-text { font-size: 13px; color: var(--text-muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .main-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding-bottom: 20px; }
+        
+        .image-container {
+            width: 260px; height: 260px; border-radius: 50%;
+            border: 4px solid rgba(168, 85, 247, 0.3); 
+            box-shadow: 0 0 50px var(--accent-glow), inset 0 0 20px rgba(0,0,0,0.8);
+            overflow: hidden; transition: transform 0.05s; 
+            background: #000; margin-bottom: 20px; position: relative; z-index: 2;
+            touch-action: none;
+        }
+        .image-container:active { transform: scale(0.94); box-shadow: 0 0 70px rgba(217, 70, 239, 0.6); }
+        img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+        .stats-pill {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 12px 30px; display: flex; gap: 40px; margin-top: 20px;
+        }
+        .stat-item { display: flex; flex-direction: column; align-items: center; font-size: 16px; font-weight: 700; color: #fff; }
+        .stat-item span { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; }
+
+        .floating-text {
+            position: absolute; font-size: 28px; font-weight: 800; color: #d946ef;
+            text-shadow: 0 0 10px rgba(217,70,239,0.8); pointer-events: none;
+            animation: fly 0.8s ease-out forwards; z-index: 10;
+        }
+        @keyframes fly { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.2); } }
+
+        /* Появляющаяся кнопка бонуса (5.jpg) */
+        .secret-spawn {
+            position: absolute; width: 75px; height: 75px;
+            border-radius: 50%; border: 3px solid #d946ef;
+            box-shadow: 0 0 30px rgba(217,70,239,0.8); z-index: 100;
+            background-image: url('5.jpg'); background-size: cover; background-position: center;
+            cursor: pointer;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .shop-area { flex: 1; display: none; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
+        .shop-title { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; color: #fff; }
+        .shop-item {
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 16px; 
+            padding: 18px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .shop-info h3 { margin: 0 0 6px 0; font-size: 17px; color: #fff; font-weight: 600; }
+        .shop-info p { margin: 0; color: var(--text-muted); font-size: 13px; }
+        .buy-btn {
+            background: linear-gradient(90deg, #9333ea, #c026d3); color: #fff; border: none; 
+            padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 14px; 
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); transition: 0.1s;
+        }
+        .buy-btn:active:not(:disabled) { transform: scale(0.95); }
+        .buy-btn:disabled { background: #27272a; color: #52525b; box-shadow: none; }
+
+        .nav-container { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 50; }
+        .nav { 
+            display: flex; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px;
+        }
+        .nav-btn { 
+            flex: 1; text-align: center; color: var(--text-muted); font-size: 14px; font-weight: 600; 
+            padding: 14px 0; border-radius: 14px; transition: 0.3s; 
+        }
+        .nav-btn.active { background: rgba(168, 85, 247, 0.15); color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="loadingScreen">
+        <img src="secretphoto.jpg" alt="Secret" class="loading-avatar">
+        <div class="loading-text">ЗАГРУЗКА...</div>
+    </div>
+
+    <div class="header">
+        <div class="score-badge"><span id="scoreText">0</span> 💰</div>
+        <div class="progress-wrapper"><div class="progress-fill" id="progressBar"></div></div>
+        <div class="level-text" id="levelText">Уровень 1</div>
+    </div>
+
+    <div class="main-area" id="gameScreen">
+        <div class="image-container" id="tapZone">
+            <img id="sergeyImg" src="1.jpg" alt="Радион">
+        </div>
+        
+        <div class="stats-pill">
+            <div class="stat-item"><span>За клик</span><div id="clickPowerText">1</div></div>
+            <div class="stat-item"><span>В секунду</span><div id="autoPowerText">0</div></div>
+        </div>
+    </div>
+
+    <div class="shop-area" id="shopScreen">
+        <div class="shop-title">Улучшения</div>
+        <div class="shop-item">
+            <div class="shop-info"><h3>Мультитап</h3><p>Увеличивает силу нажатия</p></div>
+            <button class="buy-btn" id="buyClickBtn">50 💰</button>
+        </div>
+        <div class="shop-item">
+            <div class="shop-info"><h3>Автокликер</h3><p>Добывает монеты автоматически</p></div>
+            <button class="buy-btn" id="buyAutoBtn">150 💰</button>
+        </div>
+    </div>
+
+    <div class="nav-container">
+        <div class="nav">
+            <div class="nav-btn active" id="navGame">🎮 Игра</div>
+            <div class="nav-btn" id="navShop">🛒 Магазин</div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loadingScreen');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 1500);
+        };
+
+        let score = parseInt(localStorage.getItem('sg_score_v5')) || 0;
+        let clickPower = parseInt(localStorage.getItem('sg_click_v5')) || 1;
+        let autoPower = parseInt(localStorage.getItem('sg_auto_v5')) || 0;
+        let clickCost = parseInt(localStorage.getItem('sg_clickCost_v5')) || 50;
+        let autoCost = parseInt(localStorage.getItem('sg_autoCost_v5')) || 150;
+
+        const levels = [
+            { threshold: 0, img: "1.jpg", name: "Новичок" },
+            { threshold: 500, img: "2.jpg", name: "Продвинутый" },
+            { threshold: 2000, img: "3.jpg", name: "Мастер" },
+            { threshold: 10000, img: "4.jpg", name: "Легенда" }
+        ];
+
+        const scoreText = document.getElementById("scoreText");
+        const levelText = document.getElementById("levelText");
+        const progressBar = document.getElementById("progressBar");
+        const imgEl = document.getElementById("sergeyImg");
+        
+        function saveGame() {
+            localStorage.setItem('sg_score_v5', score);
+            localStorage.setItem('sg_click_v5', clickPower);
+            localStorage.setItem('sg_auto_v5', autoPower);
+            localStorage.setItem('sg_clickCost_v5', clickCost);
+            localStorage.setItem('sg_autoCost_v5', autoCost);
+        }
+
+        function updateUI() {
+            scoreText.innerText = score.toLocaleString();
+            document.getElementById("clickPowerText").innerText = `+${clickPower}`;
+            document.getElementById("autoPowerText").innerText = `+${autoPower}`;
+            
+            let btnClick = document.getElementById("buyClickBtn");
+            let btnAuto = document.getElementById("buyAutoBtn");
+            btnClick.innerText = `${clickCost.toLocaleString()} 💰`;
+            btnAuto.innerText = `${autoCost.toLocaleString()} 💰`;
+            btnClick.disabled = score < clickCost;
+            btnAuto.disabled = score < autoCost;
+
+            let curLvl = 0;
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (score >= levels[i].threshold) {
+                    curLvl = i; imgEl.src = levels[i].img;
+                    levelText.innerText = `Ур. ${i + 1} — ${levels[i].name}`; break;
+                }
+            }
+
+            if (curLvl < levels.length - 1) {
+                let perc = ((score - levels[curLvl].threshold) / (levels[curLvl+1].threshold - levels[curLvl].threshold)) * 100;
+                progressBar.style.width = `${perc}%`;
+            } else {
+                progressBar.style.width = "100%";
+            }
+        }
+
+        function spawnText(x, y, text, color = "#d946ef") {
+            const el = document.createElement("div");
+            el.className = "floating-text";
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = `${x - 20 + (Math.random() - 0.5)*40}px`;
+            el.style.top = `${y - 40}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        const tapZone = document.getElementById("tapZone");
+        tapZone.addEventListener("touchstart", (e) => {
+            e.preventDefault(); score += clickPower;
+            spawnText(e.touches[0].clientX, e.touches[0].clientY, `+${clickPower}`);
+            saveGame(); updateUI();
+        }, {passive: false});
+        
+        tapZone.addEventListener("mousedown", (e) => {
+            score += clickPower;
+            spawnText(e.clientX, e.clientY, `+${clickPower}`);
+            saveGame(); updateUI();
+        });
+
+        document.getElementById("buyClickBtn").onclick = () => {
+            if (score >= clickCost) {
+                score -= clickCost; clickPower++; clickCost = Math.floor(clickCost * 1.3);
+                saveGame(); updateUI();
+            }
+        };
+
+        document.getElementById("buyAutoBtn").onclick = () => {
+            if (score >= autoCost) {
+                score -= autoCost; autoPower += 2; autoCost = Math.floor(autoCost * 1.3);
+                saveGame(); updateUI();
+            }
+        };
+
+        document.getElementById("navGame").onclick = () => {
+            document.getElementById("gameScreen").style.display = "flex";
+            document.getElementById("shopScreen").style.display = "none";
+            document.getElementById("navGame").classList.add("active");
+            document.getElementById("navShop").classList.remove("active");
+        };
+
+        document.getElementById("navShop").onclick = () => {
+            document.getElementById("gameScreen").style.display = "none";
+            document.getElementById("shopScreen").style.display = "block";
+            document.getElementById("navGame").classList.remove("active");
+            document.getElementById("navShop").classList.add("active");
+            updateUI();
+        };
+
+        setInterval(() => {
+            if (autoPower > 0) { score += autoPower; saveGame(); updateUI(); }
+        }, 1000);
+
+        // Появление бонуса 5.jpg раз в 35 секунд
+        function spawnBonusButton() {
+            if (document.getElementById("gameScreen").style.display === "none") return;
+
+            const btn = document.createElement("div");
+            btn.className = "secret-spawn";
+            
+            const size = 75;
+            const x = Math.random() * (window.innerWidth - size);
+            const y = Math.random() * (window.innerHeight - 250) + 100;
+            
+            btn.style.left = `${x}px`;
+            btn.style.top = `${y}px`;
+
+            const clickBonus = (e) => {
+                e.preventDefault();
+                btn.remove();
+                
+                const bonuses = [100, 500, 1000];
+                const bonus = bonuses[Math.floor(Math.random() * bonuses.length)];
+                
+                score += bonus;
+                spawnText(x + size/2, y, `+${bonus}`, "#d946ef");
+                
+                saveGame(); updateUI();
+            };
+
+            btn.addEventListener("touchstart", clickBonus, {passive: false});
+            btn.addEventListener("mousedown", clickBonus);
+            document.body.appendChild(btn);
+
+            // Исчезает через 5 секунд, если не успел нажать
+            setTimeout(() => { if(btn.parentNode) btn.remove(); }, 5000);
+        }
+
+        setInterval(spawnBonusButton, 35000); // Строго каждые 35 секунд
+
+        updateUI();
+    </script>
+</body>
+</html>
