@@ -20,14 +20,26 @@
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-grad); 
-            background-attachment: fixed; /* Чтобы фон не уезжал при прокрутке */
+            background-attachment: fixed; 
             color: var(--text-main);
             margin: 0; padding: 0; 
-            min-height: 100vh; /* Разрешаем странице расти вниз */
+            min-height: 100vh; 
             user-select: none; -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden;
-            overflow-y: auto; /* Включаем прокрутку */
+            overflow-x: hidden; overflow-y: auto; 
         }
+
+        /* Уведомление об ачивке */
+        .notification {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: rgba(168, 85, 247, 0.95); backdrop-filter: blur(10px);
+            color: #fff; padding: 15px 20px; border-radius: 20px;
+            font-weight: 700; font-size: 15px; text-align: center;
+            box-shadow: 0 10px 30px rgba(168,85,247,0.5);
+            z-index: 1000; width: 90%; max-width: 400px;
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .notification.show { top: 20px; }
 
         #loadingScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -55,8 +67,7 @@
 
         .main-area { 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            position: relative; padding-bottom: 120px; 
-            min-height: calc(100vh - 160px); /* Чтобы по центру было */
+            position: relative; padding-bottom: 120px; min-height: calc(100vh - 160px); 
         }
         
         .image-container {
@@ -79,34 +90,32 @@
         .stat-item span { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; }
 
         .floating-text {
-            position: fixed; /* Fixed, чтобы цифры летели поверх всего даже при скролле */
-            font-size: 28px; font-weight: 800; color: #d946ef;
+            position: fixed; font-size: 28px; font-weight: 800; color: #d946ef;
             text-shadow: 0 0 10px rgba(217,70,239,0.8); pointer-events: none;
             animation: fly 0.8s ease-out forwards; z-index: 10;
         }
         @keyframes fly { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.2); } }
 
-        /* Появляющаяся кнопка бонуса (5.jpg) */
         .secret-spawn {
-            position: fixed; /* Fixed чтобы всегда была на экране */
-            width: 75px; height: 75px;
-            border-radius: 50%; border: 3px solid #d946ef;
+            position: fixed; width: 75px; height: 75px; border-radius: 50%; border: 3px solid #d946ef;
             box-shadow: 0 0 30px rgba(217,70,239,0.8); z-index: 100;
             background-image: url('5.jpg'); background-size: cover; background-position: center;
-            cursor: pointer;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            cursor: pointer; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        .shop-area { display: none; padding: 20px; padding-bottom: 120px; /* Отступ под меню снизу */ }
-        .shop-title { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; color: #fff; }
-        .shop-item {
+        /* Экраны контента (Магазин, Ачивки) */
+        .content-area { display: none; padding: 20px; padding-bottom: 120px; }
+        .content-title { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; color: #fff; }
+        
+        .card-item {
             background: var(--glass); backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border); border-radius: 16px; 
             padding: 18px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
         }
-        .shop-info h3 { margin: 0 0 6px 0; font-size: 17px; color: #fff; font-weight: 600; }
-        .shop-info p { margin: 0; color: var(--text-muted); font-size: 13px; }
+        .card-info h3 { margin: 0 0 6px 0; font-size: 17px; color: #fff; font-weight: 600; }
+        .card-info p { margin: 0; color: var(--text-muted); font-size: 13px; }
+        
         .buy-btn {
             background: linear-gradient(90deg, #9333ea, #c026d3); color: #fff; border: none; 
             padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 14px; 
@@ -115,10 +124,12 @@
         .buy-btn:active:not(:disabled) { transform: scale(0.95); }
         .buy-btn:disabled { background: #27272a; color: #52525b; box-shadow: none; }
 
-        /* НАВИГАЦИЯ (закреплена внизу экрана) */
-        .nav-container { 
-            position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 50; 
-        }
+        /* Стили для ачивок */
+        .achieve-status { font-weight: 700; font-size: 14px; }
+        .card-item.unlocked { border-color: #d946ef; box-shadow: 0 0 15px rgba(217,70,239,0.15); }
+        .card-item.locked { opacity: 0.6; filter: grayscale(50%); }
+
+        .nav-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 50; }
         .nav { 
             display: flex; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(20px); 
             border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px;
@@ -138,12 +149,16 @@
         <div class="loading-text">ЗАГРУЗКА...</div>
     </div>
 
+    <!-- Уведомление -->
+    <div id="notifBox" class="notification">🏆 Открыто достижение!</div>
+
     <div class="header">
         <div class="score-badge"><span id="scoreText">0</span> 💰</div>
         <div class="progress-wrapper"><div class="progress-fill" id="progressBar"></div></div>
         <div class="level-text" id="levelText">Уровень 1</div>
     </div>
 
+    <!-- ИГРА -->
     <div class="main-area" id="gameScreen">
         <div class="image-container" id="tapZone">
             <img id="sergeyImg" src="1.jpg" alt="Радион">
@@ -155,51 +170,74 @@
         </div>
     </div>
 
-    <div class="shop-area" id="shopScreen">
-        <div class="shop-title">Улучшения</div>
+    <!-- МАГАЗИН -->
+    <div class="content-area" id="shopScreen">
+        <div class="content-title">Улучшения</div>
         
-        <div class="shop-item">
-            <div class="shop-info"><h3>Мультитап</h3><p>Увеличивает силу нажатия</p></div>
+        <div class="card-item">
+            <div class="card-info"><h3>Мультитап</h3><p>Увеличивает силу нажатия</p></div>
             <button class="buy-btn" id="buyClickBtn">50 💰</button>
         </div>
-        <div class="shop-item">
-            <div class="shop-info"><h3>Автокликер</h3><p>Добывает монеты автоматически</p></div>
+        <div class="card-item">
+            <div class="card-info"><h3>Автокликер</h3><p>Добывает монеты автоматически</p></div>
             <button class="buy-btn" id="buyAutoBtn">150 💰</button>
         </div>
-        <!-- Можно добавлять сколько угодно улучшений, магазин будет листаться вниз -->
-        <div class="shop-item">
-            <div class="shop-info"><h3>Турбо-палец</h3><p>Для настоящих мастеров</p></div>
+        <div class="card-item">
+            <div class="card-info"><h3>Турбо-палец</h3><p>Для настоящих мастеров</p></div>
             <button class="buy-btn" id="buySuperBtn">1000 💰</button>
         </div>
     </div>
 
+    <!-- ДОСТИЖЕНИЯ -->
+    <div class="content-area" id="achieveScreen">
+        <div class="content-title">Награды</div>
+        <div id="achievementsList">
+            <!-- Ачивки генерируются скриптом -->
+        </div>
+    </div>
+
+    <!-- МЕНЮ -->
     <div class="nav-container">
         <div class="nav">
             <div class="nav-btn active" id="navGame">🎮 Игра</div>
             <div class="nav-btn" id="navShop">🛒 Магазин</div>
+            <div class="nav-btn" id="navAchieve">🏆 Награды</div>
         </div>
     </div>
 
     <script>
+        // Ачивки (Условия и награды)
+        const achievementsData = [
+            { id: "a_100", title: "Первая сотня", desc: "Накопи 100 монет", reward: 200, type: "score", target: 100 },
+            { id: "a_1000", title: "Миллионер", desc: "Накопи 1,000 монет", reward: 1000, type: "score", target: 1000 },
+            { id: "a_boss", title: "Первый Босс", desc: "Достигни 3 уровня", reward: 5000, type: "score", target: 2000 },
+            { id: "a_legend", title: "Легенда", desc: "Достигни максимального уровня", reward: 15000, type: "score", target: 10000 },
+            { id: "a_click", title: "Стальной палец", desc: "Прокачай силу клика до 10", reward: 2000, type: "click", target: 10 },
+            { id: "a_auto", title: "Заводчик", desc: "Прокачай автоклик до 20", reward: 3000, type: "auto", target: 20 }
+        ];
+
         window.onload = () => {
             setTimeout(() => {
                 const loader = document.getElementById('loadingScreen');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 500);
             }, 1500);
+            renderAchievements();
         };
 
-        let score = parseInt(localStorage.getItem('sg_score_v5')) || 0;
-        let clickPower = parseInt(localStorage.getItem('sg_click_v5')) || 1;
-        let autoPower = parseInt(localStorage.getItem('sg_auto_v5')) || 0;
-        let clickCost = parseInt(localStorage.getItem('sg_clickCost_v5')) || 50;
-        let autoCost = parseInt(localStorage.getItem('sg_autoCost_v5')) || 150;
-        let superCost = parseInt(localStorage.getItem('sg_superCost_v5')) || 1000;
+        let score = parseInt(localStorage.getItem('sg_score_v6')) || 0;
+        let clickPower = parseInt(localStorage.getItem('sg_click_v6')) || 1;
+        let autoPower = parseInt(localStorage.getItem('sg_auto_v6')) || 0;
+        let clickCost = parseInt(localStorage.getItem('sg_clickCost_v6')) || 50;
+        let autoCost = parseInt(localStorage.getItem('sg_autoCost_v6')) || 150;
+        let superCost = parseInt(localStorage.getItem('sg_superCost_v6')) || 1000;
+        
+        let unlockedAchieves = JSON.parse(localStorage.getItem('sg_achieves_v6')) || [];
 
         const levels = [
             { threshold: 0, img: "1.jpg", name: "Новичок" },
             { threshold: 500, img: "2.jpg", name: "Продвинутый" },
-            { threshold: 2000, img: "3.jpg", name: "Мастер" },
+            { threshold: 2000, img: "3.jpg", name: "Мастер (Босс)" },
             { threshold: 10000, img: "4.jpg", name: "Легенда" }
         ];
 
@@ -207,14 +245,67 @@
         const levelText = document.getElementById("levelText");
         const progressBar = document.getElementById("progressBar");
         const imgEl = document.getElementById("sergeyImg");
+        const notifBox = document.getElementById("notifBox");
         
         function saveGame() {
-            localStorage.setItem('sg_score_v5', score);
-            localStorage.setItem('sg_click_v5', clickPower);
-            localStorage.setItem('sg_auto_v5', autoPower);
-            localStorage.setItem('sg_clickCost_v5', clickCost);
-            localStorage.setItem('sg_autoCost_v5', autoCost);
-            localStorage.setItem('sg_superCost_v5', superCost);
+            localStorage.setItem('sg_score_v6', score);
+            localStorage.setItem('sg_click_v6', clickPower);
+            localStorage.setItem('sg_auto_v6', autoPower);
+            localStorage.setItem('sg_clickCost_v6', clickCost);
+            localStorage.setItem('sg_autoCost_v6', autoCost);
+            localStorage.setItem('sg_superCost_v6', superCost);
+            localStorage.setItem('sg_achieves_v6', JSON.stringify(unlockedAchieves));
+        }
+
+        // Проверка ачивок
+        function checkAchievements() {
+            let changed = false;
+            achievementsData.forEach(ach => {
+                if (!unlockedAchieves.includes(ach.id)) {
+                    let done = false;
+                    if (ach.type === "score" && score >= ach.target) done = true;
+                    if (ach.type === "click" && clickPower >= ach.target) done = true;
+                    if (ach.type === "auto" && autoPower >= ach.target) done = true;
+
+                    if (done) {
+                        unlockedAchieves.push(ach.id);
+                        score += ach.reward;
+                        changed = true;
+                        
+                        // Показываем уведомление
+                        notifBox.innerText = `🏆 Открыто: ${ach.title} (+${ach.reward} 💰)`;
+                        notifBox.classList.add("show");
+                        setTimeout(() => notifBox.classList.remove("show"), 3000);
+                    }
+                }
+            });
+
+            if (changed) {
+                saveGame();
+                updateUI();
+                renderAchievements();
+            }
+        }
+
+        function renderAchievements() {
+            const list = document.getElementById("achievementsList");
+            list.innerHTML = "";
+            achievementsData.forEach(ach => {
+                const isDone = unlockedAchieves.includes(ach.id);
+                const div = document.createElement("div");
+                div.className = `card-item ${isDone ? 'unlocked' : 'locked'}`;
+                
+                div.innerHTML = `
+                    <div class="card-info">
+                        <h3 style="color: ${isDone ? '#d946ef' : '#fff'}">${ach.title}</h3>
+                        <p>${ach.desc}</p>
+                    </div>
+                    <div class="achieve-status">
+                        ${isDone ? '✅ Выполнено' : `🎁 ${ach.reward}`}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
 
         function updateUI() {
@@ -261,97 +352,77 @@
             setTimeout(() => el.remove(), 800);
         }
 
+        // КЛИКЕР
         const tapZone = document.getElementById("tapZone");
         tapZone.addEventListener("touchstart", (e) => {
             e.preventDefault(); score += clickPower;
             spawnText(e.touches[0].clientX, e.touches[0].clientY, `+${clickPower}`);
-            saveGame(); updateUI();
+            saveGame(); updateUI(); checkAchievements();
         }, {passive: false});
         
         tapZone.addEventListener("mousedown", (e) => {
             score += clickPower;
             spawnText(e.clientX, e.clientY, `+${clickPower}`);
-            saveGame(); updateUI();
+            saveGame(); updateUI(); checkAchievements();
         });
 
+        // ПОКУПКИ
         document.getElementById("buyClickBtn").onclick = () => {
             if (score >= clickCost) {
                 score -= clickCost; clickPower += 1; clickCost = Math.floor(clickCost * 1.3);
-                saveGame(); updateUI();
+                saveGame(); updateUI(); checkAchievements();
             }
         };
 
         document.getElementById("buyAutoBtn").onclick = () => {
             if (score >= autoCost) {
                 score -= autoCost; autoPower += 2; autoCost = Math.floor(autoCost * 1.3);
-                saveGame(); updateUI();
+                saveGame(); updateUI(); checkAchievements();
             }
         };
 
         document.getElementById("buySuperBtn").onclick = () => {
             if (score >= superCost) {
                 score -= superCost; clickPower += 5; superCost = Math.floor(superCost * 1.5);
-                saveGame(); updateUI();
+                saveGame(); updateUI(); checkAchievements();
             }
         };
 
-        document.getElementById("navGame").onclick = () => {
-            document.getElementById("gameScreen").style.display = "flex";
-            document.getElementById("shopScreen").style.display = "none";
-            document.getElementById("navGame").classList.add("active");
-            document.getElementById("navShop").classList.remove("active");
-            window.scrollTo(0, 0); // Возвращаемся наверх при переключении
-        };
+        // НАВИГАЦИЯ (ВКЛАДКИ)
+        const tabs = ["navGame", "navShop", "navAchieve"];
+        const screens = ["gameScreen", "shopScreen", "achieveScreen"];
 
-        document.getElementById("navShop").onclick = () => {
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("shopScreen").style.display = "block";
-            document.getElementById("navGame").classList.remove("active");
-            document.getElementById("navShop").classList.add("active");
+        function switchTab(activeTabId, activeScreenId) {
+            tabs.forEach(tab => document.getElementById(tab).classList.remove("active"));
+            screens.forEach(scr => document.getElementById(scr).style.display = "none");
+            
+            document.getElementById(activeTabId).classList.add("active");
+            document.getElementById(activeScreenId).style.display = "block";
+            if (activeScreenId === "gameScreen") document.getElementById(activeScreenId).style.display = "flex";
+            
+            window.scrollTo(0, 0);
             updateUI();
-        };
+        }
 
+        document.getElementById("navGame").onclick = () => switchTab("navGame", "gameScreen");
+        document.getElementById("navShop").onclick = () => switchTab("navShop", "shopScreen");
+        document.getElementById("navAchieve").onclick = () => switchTab("navAchieve", "achieveScreen");
+
+        // АВТОКЛИК
         setInterval(() => {
-            if (autoPower > 0) { score += autoPower; saveGame(); updateUI(); }
+            if (autoPower > 0) { 
+                score += autoPower; saveGame(); updateUI(); checkAchievements(); 
+            }
         }, 1000);
 
-        // Появление бонуса 5.jpg раз в 35 секунд
+        // БОНУС 5.jpg раз в 35 сек
         function spawnBonusButton() {
             if (document.getElementById("gameScreen").style.display === "none") return;
 
             const btn = document.createElement("div");
             btn.className = "secret-spawn";
-            
             const size = 75;
             const x = Math.random() * (window.innerWidth - size);
             const y = Math.random() * (window.innerHeight - 250) + 100;
             
-            btn.style.left = `${x}px`;
-            btn.style.top = `${y}px`;
-
-            const clickBonus = (e) => {
-                e.preventDefault();
-                btn.remove();
-                
-                const bonuses = [100, 500, 1000];
-                const bonus = bonuses[Math.floor(Math.random() * bonuses.length)];
-                
-                score += bonus;
-                spawnText(x + size/2, y, `+${bonus}`, "#d946ef");
-                
-                saveGame(); updateUI();
-            };
-
-            btn.addEventListener("touchstart", clickBonus, {passive: false});
-            btn.addEventListener("mousedown", clickBonus);
-            document.body.appendChild(btn);
-
-            setTimeout(() => { if(btn.parentNode) btn.remove(); }, 5000);
-        }
-
-        setInterval(spawnBonusButton, 35000); // Появление каждые 35 секунд
-
-        updateUI();
-    </script>
-</body>
-</html>
+            btn.style.left = `${x
