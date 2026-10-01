@@ -19,8 +19,11 @@
         * { box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-grad); background-attachment: fixed; 
-            color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; 
+            background: var(--bg-grad); 
+            background-attachment: fixed; 
+            color: var(--text-main);
+            margin: 0; padding: 0; 
+            min-height: 100vh; 
             user-select: none; -webkit-tap-highlight-color: transparent;
             overflow-x: hidden; overflow-y: auto; 
         }
@@ -62,20 +65,25 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #d946ef); width: 0%; transition: width 0.3s ease; }
         .level-text { font-size: 13px; color: var(--text-muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        .main-area { display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding-bottom: 120px; min-height: calc(100vh - 160px); }
+        .main-area { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            position: relative; padding-bottom: 120px; min-height: calc(100vh - 160px); 
+        }
         
         .image-container {
             width: 260px; height: 260px; border-radius: 50%;
             border: 4px solid rgba(168, 85, 247, 0.3); 
             box-shadow: 0 0 50px var(--accent-glow), inset 0 0 20px rgba(0,0,0,0.8);
             overflow: hidden; transition: transform 0.05s; 
-            background: #000; margin-bottom: 20px; position: relative; z-index: 2; touch-action: none;
+            background: #000; margin-bottom: 20px; position: relative; z-index: 2;
+            touch-action: none;
         }
         .image-container:active { transform: scale(0.94); box-shadow: 0 0 70px rgba(217, 70, 239, 0.6); }
         img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
         .stats-pill {
-            background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px;
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
             padding: 12px 30px; display: flex; gap: 40px; margin-top: 20px;
         }
         .stat-item { display: flex; flex-direction: column; align-items: center; font-size: 16px; font-weight: 700; color: #fff; }
@@ -96,11 +104,13 @@
         }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
+        /* Экраны контента (Магазин, Ачивки) */
         .content-area { display: none; padding: 20px; padding-bottom: 120px; }
         .content-title { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; color: #fff; }
         
         .card-item {
-            background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; 
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: 16px; 
             padding: 18px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
         }
         .card-info h3 { margin: 0 0 6px 0; font-size: 17px; color: #fff; font-weight: 600; }
@@ -114,23 +124,28 @@
         .buy-btn:active:not(:disabled) { transform: scale(0.95); }
         .buy-btn:disabled { background: #27272a; color: #52525b; box-shadow: none; }
 
-        .achieve-status { font-weight: 700; font-size: 14px; text-align: right; }
+        /* Стили для ачивок */
+        .achieve-status { font-weight: 700; font-size: 14px; }
         .card-item.unlocked { border-color: #d946ef; box-shadow: 0 0 15px rgba(217,70,239,0.15); }
         .card-item.locked { opacity: 0.6; filter: grayscale(50%); }
 
         .nav-container { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 50; }
         .nav { 
             display: flex; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(20px); 
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .nav-btn { flex: 1; text-align: center; color: var(--text-muted); font-size: 14px; font-weight: 600; padding: 14px 0; border-radius: 14px; transition: 0.3s; }
+        .nav-btn { 
+            flex: 1; text-align: center; color: var(--text-muted); font-size: 14px; font-weight: 600; 
+            padding: 14px 0; border-radius: 14px; transition: 0.3s; 
+        }
         .nav-btn.active { background: rgba(168, 85, 247, 0.15); color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div id="loadingScreen">
-        <img src="secretphoto.jpg" alt="Secret" class="loading-avatar" onerror="this.src='1.jpg'; this.onerror=null;">
+        <img src="secretphoto.jpg" alt="Secret" class="loading-avatar">
         <div class="loading-text">ЗАГРУЗКА...</div>
     </div>
 
@@ -158,6 +173,7 @@
     <!-- МАГАЗИН -->
     <div class="content-area" id="shopScreen">
         <div class="content-title">Улучшения</div>
+        
         <div class="card-item">
             <div class="card-info"><h3>Мультитап</h3><p>Увеличивает силу нажатия</p></div>
             <button class="buy-btn" id="buyClickBtn">50 💰</button>
@@ -175,7 +191,9 @@
     <!-- ДОСТИЖЕНИЯ -->
     <div class="content-area" id="achieveScreen">
         <div class="content-title">Награды</div>
-        <div id="achievementsList"></div>
+        <div id="achievementsList">
+            <!-- Ачивки генерируются скриптом -->
+        </div>
     </div>
 
     <!-- МЕНЮ -->
@@ -188,49 +206,33 @@
     </div>
 
     <script>
-        // ИСПРАВЛЕННЫЙ ЭКРАН ЗАГРУЗКИ (Не ждет картинок, просто исчезает)
-        setTimeout(() => {
-            const loader = document.getElementById('loadingScreen');
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-        }, 1500);
-
-        // Список ачивок
+        // Ачивки (Условия и награды)
         const achievementsData = [
             { id: "a_100", title: "Первая сотня", desc: "Накопи 100 монет", reward: 200, type: "score", target: 100 },
-            { id: "a_1000", title: "Первая тысяча", desc: "Накопи 1,000 монет", reward: 1000, type: "score", target: 1000 },
-            { id: "a_boss", title: "Первый Босс", desc: "Достигни 3 уровня (2,000 монет)", reward: 3000, type: "score", target: 2000 },
-            { id: "a_rich", title: "Магнат", desc: "Накопи 50,000 монет", reward: 15000, type: "score", target: 50000 },
-            { id: "a_tap_10", title: "Стальной палец", desc: "Прокачай силу клика до 10", reward: 2000, type: "click", target: 10 },
-            { id: "a_tap_50", title: "Рука-кувалда", desc: "Прокачай силу клика до 50", reward: 10000, type: "click", target: 50 },
-            { id: "a_auto_20", title: "Заводчик", desc: "Прокачай автоклик до 20", reward: 3000, type: "auto", target: 20 },
-            { id: "a_auto_100", title: "Скайнет", desc: "Прокачай автоклик до 100", reward: 15000, type: "auto", target: 100 },
-            { id: "a_total_500", title: "Маньяк", desc: "Сделай 500 тапов по экрану", reward: 2500, type: "totalClicks", target: 500 },
-            { id: "a_secrets_5", title: "Ловец удачи", desc: "Поймай 5 бонусов", reward: 5000, type: "secrets", target: 5 }
+            { id: "a_1000", title: "Миллионер", desc: "Накопи 1,000 монет", reward: 1000, type: "score", target: 1000 },
+            { id: "a_boss", title: "Первый Босс", desc: "Достигни 3 уровня", reward: 5000, type: "score", target: 2000 },
+            { id: "a_legend", title: "Легенда", desc: "Достигни максимального уровня", reward: 15000, type: "score", target: 10000 },
+            { id: "a_click", title: "Стальной палец", desc: "Прокачай силу клика до 10", reward: 2000, type: "click", target: 10 },
+            { id: "a_auto", title: "Заводчик", desc: "Прокачай автоклик до 20", reward: 3000, type: "auto", target: 20 }
         ];
 
-        // Инициализация при старте
-        renderAchievements();
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loadingScreen');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 1500);
+            renderAchievements();
+        };
 
-        // Переменные прогресса
-        let score = parseInt(localStorage.getItem('sg_score_v7')) || 0;
-        let clickPower = parseInt(localStorage.getItem('sg_click_v7')) || 1;
-        let autoPower = parseInt(localStorage.getItem('sg_auto_v7')) || 0;
-        let clickCost = parseInt(localStorage.getItem('sg_clickCost_v7')) || 50;
-        let autoCost = parseInt(localStorage.getItem('sg_autoCost_v7')) || 150;
-        let superCost = parseInt(localStorage.getItem('sg_superCost_v7')) || 1000;
+        let score = parseInt(localStorage.getItem('sg_score_v6')) || 0;
+        let clickPower = parseInt(localStorage.getItem('sg_click_v6')) || 1;
+        let autoPower = parseInt(localStorage.getItem('sg_auto_v6')) || 0;
+        let clickCost = parseInt(localStorage.getItem('sg_clickCost_v6')) || 50;
+        let autoCost = parseInt(localStorage.getItem('sg_autoCost_v6')) || 150;
+        let superCost = parseInt(localStorage.getItem('sg_superCost_v6')) || 1000;
         
-        let totalClicksCounter = parseInt(localStorage.getItem('sg_totalClicks_v7')) || 0;
-        let secretsCaught = parseInt(localStorage.getItem('sg_secretsCaught_v7')) || 0;
-        
-        let unlockedAchieves = [];
-        try {
-            unlockedAchieves = JSON.parse(localStorage.getItem('sg_achieves_v7')) || [];
-        } catch(e) {
-            unlockedAchieves = [];
-        }
+        let unlockedAchieves = JSON.parse(localStorage.getItem('sg_achieves_v6')) || [];
 
         const levels = [
             { threshold: 0, img: "1.jpg", name: "Новичок" },
@@ -246,17 +248,16 @@
         const notifBox = document.getElementById("notifBox");
         
         function saveGame() {
-            localStorage.setItem('sg_score_v7', score);
-            localStorage.setItem('sg_click_v7', clickPower);
-            localStorage.setItem('sg_auto_v7', autoPower);
-            localStorage.setItem('sg_clickCost_v7', clickCost);
-            localStorage.setItem('sg_autoCost_v7', autoCost);
-            localStorage.setItem('sg_superCost_v7', superCost);
-            localStorage.setItem('sg_totalClicks_v7', totalClicksCounter);
-            localStorage.setItem('sg_secretsCaught_v7', secretsCaught);
-            localStorage.setItem('sg_achieves_v7', JSON.stringify(unlockedAchieves));
+            localStorage.setItem('sg_score_v6', score);
+            localStorage.setItem('sg_click_v6', clickPower);
+            localStorage.setItem('sg_auto_v6', autoPower);
+            localStorage.setItem('sg_clickCost_v6', clickCost);
+            localStorage.setItem('sg_autoCost_v6', autoCost);
+            localStorage.setItem('sg_superCost_v6', superCost);
+            localStorage.setItem('sg_achieves_v6', JSON.stringify(unlockedAchieves));
         }
 
+        // Проверка ачивок
         function checkAchievements() {
             let changed = false;
             achievementsData.forEach(ach => {
@@ -265,15 +266,14 @@
                     if (ach.type === "score" && score >= ach.target) done = true;
                     if (ach.type === "click" && clickPower >= ach.target) done = true;
                     if (ach.type === "auto" && autoPower >= ach.target) done = true;
-                    if (ach.type === "totalClicks" && totalClicksCounter >= ach.target) done = true;
-                    if (ach.type === "secrets" && secretsCaught >= ach.target) done = true;
 
                     if (done) {
                         unlockedAchieves.push(ach.id);
                         score += ach.reward;
                         changed = true;
                         
-                        notifBox.innerText = `🏆 ${ach.title} (+${ach.reward.toLocaleString()} 💰)`;
+                        // Показываем уведомление
+                        notifBox.innerText = `🏆 Открыто: ${ach.title} (+${ach.reward} 💰)`;
                         notifBox.classList.add("show");
                         setTimeout(() => notifBox.classList.remove("show"), 3000);
                     }
@@ -281,7 +281,9 @@
             });
 
             if (changed) {
-                saveGame(); updateUI(); renderAchievements();
+                saveGame();
+                updateUI();
+                renderAchievements();
             }
         }
 
@@ -293,19 +295,13 @@
                 const div = document.createElement("div");
                 div.className = `card-item ${isDone ? 'unlocked' : 'locked'}`;
                 
-                let progressText = "";
-                if(!isDone) {
-                    if (ach.type === "totalClicks") progressText = `<br><span style="font-size:11px; color:#a1a1aa">Прогресс: ${totalClicksCounter}/${ach.target}</span>`;
-                    if (ach.type === "secrets") progressText = `<br><span style="font-size:11px; color:#a1a1aa">Прогресс: ${secretsCaught}/${ach.target}</span>`;
-                }
-
                 div.innerHTML = `
                     <div class="card-info">
                         <h3 style="color: ${isDone ? '#d946ef' : '#fff'}">${ach.title}</h3>
-                        <p>${ach.desc} ${progressText}</p>
+                        <p>${ach.desc}</p>
                     </div>
                     <div class="achieve-status">
-                        ${isDone ? '✅' : `🎁 ${ach.reward}`}
+                        ${isDone ? '✅ Выполнено' : `🎁 ${ach.reward}`}
                     </div>
                 `;
                 list.appendChild(div);
@@ -317,13 +313,17 @@
             document.getElementById("clickPowerText").innerText = `+${clickPower}`;
             document.getElementById("autoPowerText").innerText = `+${autoPower}`;
             
-            document.getElementById("buyClickBtn").innerText = `${clickCost.toLocaleString()} 💰`;
-            document.getElementById("buyAutoBtn").innerText = `${autoCost.toLocaleString()} 💰`;
-            document.getElementById("buySuperBtn").innerText = `${superCost.toLocaleString()} 💰`;
+            let btnClick = document.getElementById("buyClickBtn");
+            let btnAuto = document.getElementById("buyAutoBtn");
+            let btnSuper = document.getElementById("buySuperBtn");
 
-            document.getElementById("buyClickBtn").disabled = score < clickCost;
-            document.getElementById("buyAutoBtn").disabled = score < autoCost;
-            document.getElementById("buySuperBtn").disabled = score < superCost;
+            btnClick.innerText = `${clickCost.toLocaleString()} 💰`;
+            btnAuto.innerText = `${autoCost.toLocaleString()} 💰`;
+            btnSuper.innerText = `${superCost.toLocaleString()} 💰`;
+
+            btnClick.disabled = score < clickCost;
+            btnAuto.disabled = score < autoCost;
+            btnSuper.disabled = score < superCost;
 
             let curLvl = 0;
             for (let i = levels.length - 1; i >= 0; i--) {
@@ -344,7 +344,8 @@
         function spawnText(x, y, text, color = "#d946ef") {
             const el = document.createElement("div");
             el.className = "floating-text";
-            el.innerText = text; el.style.color = color;
+            el.innerText = text;
+            el.style.color = color;
             el.style.left = `${x - 20 + (Math.random() - 0.5)*40}px`;
             el.style.top = `${y - 40}px`;
             document.body.appendChild(el);
@@ -354,16 +355,13 @@
         // КЛИКЕР
         const tapZone = document.getElementById("tapZone");
         tapZone.addEventListener("touchstart", (e) => {
-            e.preventDefault(); 
-            score += clickPower; 
-            totalClicksCounter++; 
+            e.preventDefault(); score += clickPower;
             spawnText(e.touches[0].clientX, e.touches[0].clientY, `+${clickPower}`);
             saveGame(); updateUI(); checkAchievements();
         }, {passive: false});
         
         tapZone.addEventListener("mousedown", (e) => {
-            score += clickPower; 
-            totalClicksCounter++; 
+            score += clickPower;
             spawnText(e.clientX, e.clientY, `+${clickPower}`);
             saveGame(); updateUI(); checkAchievements();
         });
@@ -375,12 +373,14 @@
                 saveGame(); updateUI(); checkAchievements();
             }
         };
+
         document.getElementById("buyAutoBtn").onclick = () => {
             if (score >= autoCost) {
                 score -= autoCost; autoPower += 2; autoCost = Math.floor(autoCost * 1.3);
                 saveGame(); updateUI(); checkAchievements();
             }
         };
+
         document.getElementById("buySuperBtn").onclick = () => {
             if (score >= superCost) {
                 score -= superCost; clickPower += 5; superCost = Math.floor(superCost * 1.5);
@@ -388,9 +388,41 @@
             }
         };
 
-        // Вкладки
+        // НАВИГАЦИЯ (ВКЛАДКИ)
         const tabs = ["navGame", "navShop", "navAchieve"];
         const screens = ["gameScreen", "shopScreen", "achieveScreen"];
+
         function switchTab(activeTabId, activeScreenId) {
             tabs.forEach(tab => document.getElementById(tab).classList.remove("active"));
-     
+            screens.forEach(scr => document.getElementById(scr).style.display = "none");
+            
+            document.getElementById(activeTabId).classList.add("active");
+            document.getElementById(activeScreenId).style.display = "block";
+            if (activeScreenId === "gameScreen") document.getElementById(activeScreenId).style.display = "flex";
+            
+            window.scrollTo(0, 0);
+            updateUI();
+        }
+
+        document.getElementById("navGame").onclick = () => switchTab("navGame", "gameScreen");
+        document.getElementById("navShop").onclick = () => switchTab("navShop", "shopScreen");
+        document.getElementById("navAchieve").onclick = () => switchTab("navAchieve", "achieveScreen");
+
+        // АВТОКЛИК
+        setInterval(() => {
+            if (autoPower > 0) { 
+                score += autoPower; saveGame(); updateUI(); checkAchievements(); 
+            }
+        }, 1000);
+
+        // БОНУС 5.jpg раз в 35 сек
+        function spawnBonusButton() {
+            if (document.getElementById("gameScreen").style.display === "none") return;
+
+            const btn = document.createElement("div");
+            btn.className = "secret-spawn";
+            const size = 75;
+            const x = Math.random() * (window.innerWidth - size);
+            const y = Math.random() * (window.innerHeight - 250) + 100;
+            
+            btn.style.left = `${x
