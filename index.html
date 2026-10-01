@@ -19,12 +19,14 @@
         * { box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-grad); color: var(--text-main);
-            margin: 0; padding: 0; height: 100vh;
-            display: flex; flex-direction: column;
+            background: var(--bg-grad); 
+            background-attachment: fixed; /* Чтобы фон не уезжал при прокрутке */
+            color: var(--text-main);
+            margin: 0; padding: 0; 
+            min-height: 100vh; /* Разрешаем странице расти вниз */
             user-select: none; -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
-            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto; /* Включаем прокрутку */
         }
 
         #loadingScreen {
@@ -51,7 +53,11 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #d946ef); width: 0%; transition: width 0.3s ease; }
         .level-text { font-size: 13px; color: var(--text-muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        .main-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding-bottom: 20px; }
+        .main-area { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            position: relative; padding-bottom: 120px; 
+            min-height: calc(100vh - 160px); /* Чтобы по центру было */
+        }
         
         .image-container {
             width: 260px; height: 260px; border-radius: 50%;
@@ -73,7 +79,8 @@
         .stat-item span { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; text-transform: uppercase; }
 
         .floating-text {
-            position: absolute; font-size: 28px; font-weight: 800; color: #d946ef;
+            position: fixed; /* Fixed, чтобы цифры летели поверх всего даже при скролле */
+            font-size: 28px; font-weight: 800; color: #d946ef;
             text-shadow: 0 0 10px rgba(217,70,239,0.8); pointer-events: none;
             animation: fly 0.8s ease-out forwards; z-index: 10;
         }
@@ -81,7 +88,8 @@
 
         /* Появляющаяся кнопка бонуса (5.jpg) */
         .secret-spawn {
-            position: absolute; width: 75px; height: 75px;
+            position: fixed; /* Fixed чтобы всегда была на экране */
+            width: 75px; height: 75px;
             border-radius: 50%; border: 3px solid #d946ef;
             box-shadow: 0 0 30px rgba(217,70,239,0.8); z-index: 100;
             background-image: url('5.jpg'); background-size: cover; background-position: center;
@@ -90,7 +98,7 @@
         }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        .shop-area { flex: 1; display: none; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
+        .shop-area { display: none; padding: 20px; padding-bottom: 120px; /* Отступ под меню снизу */ }
         .shop-title { text-align: center; font-size: 22px; margin-bottom: 20px; font-weight: 700; color: #fff; }
         .shop-item {
             background: var(--glass); backdrop-filter: blur(12px);
@@ -107,10 +115,14 @@
         .buy-btn:active:not(:disabled) { transform: scale(0.95); }
         .buy-btn:disabled { background: #27272a; color: #52525b; box-shadow: none; }
 
-        .nav-container { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 50; }
+        /* НАВИГАЦИЯ (закреплена внизу экрана) */
+        .nav-container { 
+            position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 50; 
+        }
         .nav { 
-            display: flex; background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(20px); 
+            display: flex; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(20px); 
             border: 1px solid var(--glass-border); border-radius: 20px; padding: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .nav-btn { 
             flex: 1; text-align: center; color: var(--text-muted); font-size: 14px; font-weight: 600; 
@@ -145,6 +157,7 @@
 
     <div class="shop-area" id="shopScreen">
         <div class="shop-title">Улучшения</div>
+        
         <div class="shop-item">
             <div class="shop-info"><h3>Мультитап</h3><p>Увеличивает силу нажатия</p></div>
             <button class="buy-btn" id="buyClickBtn">50 💰</button>
@@ -152,6 +165,11 @@
         <div class="shop-item">
             <div class="shop-info"><h3>Автокликер</h3><p>Добывает монеты автоматически</p></div>
             <button class="buy-btn" id="buyAutoBtn">150 💰</button>
+        </div>
+        <!-- Можно добавлять сколько угодно улучшений, магазин будет листаться вниз -->
+        <div class="shop-item">
+            <div class="shop-info"><h3>Турбо-палец</h3><p>Для настоящих мастеров</p></div>
+            <button class="buy-btn" id="buySuperBtn">1000 💰</button>
         </div>
     </div>
 
@@ -176,6 +194,7 @@
         let autoPower = parseInt(localStorage.getItem('sg_auto_v5')) || 0;
         let clickCost = parseInt(localStorage.getItem('sg_clickCost_v5')) || 50;
         let autoCost = parseInt(localStorage.getItem('sg_autoCost_v5')) || 150;
+        let superCost = parseInt(localStorage.getItem('sg_superCost_v5')) || 1000;
 
         const levels = [
             { threshold: 0, img: "1.jpg", name: "Новичок" },
@@ -195,6 +214,7 @@
             localStorage.setItem('sg_auto_v5', autoPower);
             localStorage.setItem('sg_clickCost_v5', clickCost);
             localStorage.setItem('sg_autoCost_v5', autoCost);
+            localStorage.setItem('sg_superCost_v5', superCost);
         }
 
         function updateUI() {
@@ -204,10 +224,15 @@
             
             let btnClick = document.getElementById("buyClickBtn");
             let btnAuto = document.getElementById("buyAutoBtn");
+            let btnSuper = document.getElementById("buySuperBtn");
+
             btnClick.innerText = `${clickCost.toLocaleString()} 💰`;
             btnAuto.innerText = `${autoCost.toLocaleString()} 💰`;
+            btnSuper.innerText = `${superCost.toLocaleString()} 💰`;
+
             btnClick.disabled = score < clickCost;
             btnAuto.disabled = score < autoCost;
+            btnSuper.disabled = score < superCost;
 
             let curLvl = 0;
             for (let i = levels.length - 1; i >= 0; i--) {
@@ -251,7 +276,7 @@
 
         document.getElementById("buyClickBtn").onclick = () => {
             if (score >= clickCost) {
-                score -= clickCost; clickPower++; clickCost = Math.floor(clickCost * 1.3);
+                score -= clickCost; clickPower += 1; clickCost = Math.floor(clickCost * 1.3);
                 saveGame(); updateUI();
             }
         };
@@ -263,11 +288,19 @@
             }
         };
 
+        document.getElementById("buySuperBtn").onclick = () => {
+            if (score >= superCost) {
+                score -= superCost; clickPower += 5; superCost = Math.floor(superCost * 1.5);
+                saveGame(); updateUI();
+            }
+        };
+
         document.getElementById("navGame").onclick = () => {
             document.getElementById("gameScreen").style.display = "flex";
             document.getElementById("shopScreen").style.display = "none";
             document.getElementById("navGame").classList.add("active");
             document.getElementById("navShop").classList.remove("active");
+            window.scrollTo(0, 0); // Возвращаемся наверх при переключении
         };
 
         document.getElementById("navShop").onclick = () => {
@@ -313,11 +346,10 @@
             btn.addEventListener("mousedown", clickBonus);
             document.body.appendChild(btn);
 
-            // Исчезает через 5 секунд, если не успел нажать
             setTimeout(() => { if(btn.parentNode) btn.remove(); }, 5000);
         }
 
-        setInterval(spawnBonusButton, 35000); // Строго каждые 35 секунд
+        setInterval(spawnBonusButton, 35000); // Появление каждые 35 секунд
 
         updateUI();
     </script>
